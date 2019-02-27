@@ -29,13 +29,13 @@ namespace HeuristicLab.MathJax {
   [Plugin("HeuristicLab.MathJax", "HeuristicLab transport plugin for MathJax (www.mathjax.org) , an open source JavaScript display engine for mathematics that works in all browsers", "1.1.$WCREV$")]
   [PluginFile("HeuristicLab.MathJax-2.6.1.dll", PluginFileType.Assembly)]
   [PluginFile("MathJax license.txt", PluginFileType.License)]
-  [PluginFile("mathjax.zip", PluginFileType.Data)]
+  [PluginFile("MathJax.zip", PluginFileType.Data)]
 
   public class HeuristicLabMathJaxPlugin : PluginBase {
     public override void OnLoad() {
       base.OnLoad();
       if (!Directory.EnumerateDirectories(AppDomain.CurrentDomain.BaseDirectory, "MathJax", SearchOption.TopDirectoryOnly).Any()) {
-        ZipFile.ExtractToDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "mathjax.zip"), AppDomain.CurrentDomain.BaseDirectory);
+        ZipFile.ExtractToDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MathJax.zip"), AppDomain.CurrentDomain.BaseDirectory);
       }
     }
   }

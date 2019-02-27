@@ -26,17 +26,17 @@ using System.Linq;
 using HeuristicLab.PluginInfrastructure;
 
 namespace HeuristicLab.Problems.GeneticProgramming {
-  [Plugin("HeuristicLab.Problems.GeneticProgramming","Provides implementations for genetic programming problems such as the artificial ant problem.", "3.3.16.17186")]
+  [Plugin("HeuristicLab.Problems.GeneticProgramming", "Provides implementations for genetic programming problems such as the artificial ant problem.", "3.3.16.17186")]
   [PluginFile("HeuristicLab.Problems.GeneticProgramming-3.3.dll", PluginFileType.Assembly)]
-  [PluginFile("Robocode/robocode.zip", PluginFileType.Data)]
-  [PluginFile("Robocode/BattleRunner.class", PluginFileType.Data)]
-  [PluginFile("Robocode/BattleObserver.class", PluginFileType.Data)]
+  [PluginFile("robocode/robocode.zip", PluginFileType.Data)]
+  [PluginFile("robocode/BattleRunner.class", PluginFileType.Data)]
+  [PluginFile("robocode/BattleObserver.class", PluginFileType.Data)]
   [PluginDependency("HeuristicLab.Collections", "3.3")]
   [PluginDependency("HeuristicLab.Common", "3.3")]
   [PluginDependency("HeuristicLab.Common.Resources", "3.3")]
   [PluginDependency("HeuristicLab.Core", "3.3")]
   [PluginDependency("HeuristicLab.Data", "3.3")]
-  [PluginDependency("HeuristicLab.Encodings.SymbolicExpressionTreeEncoding","3.4")]
+  [PluginDependency("HeuristicLab.Encodings.SymbolicExpressionTreeEncoding", "3.4")]
   [PluginDependency("HeuristicLab.Optimization", "3.3")]
   [PluginDependency("HeuristicLab.Parameters", "3.3")]
   [PluginDependency("HeuristicLab.Attic", "1.0")]
@@ -45,10 +45,10 @@ namespace HeuristicLab.Problems.GeneticProgramming {
   [PluginDependency("HeuristicLab.Random", "3.3")]
   public class HeuristicLabProblemsGeneticProgrammingPlugin : PluginBase {
     public override void OnLoad() {
-        base.OnLoad();
-        if (!Directory.EnumerateDirectories(AppDomain.CurrentDomain.BaseDirectory, Path.Combine("Robocode", "libs"), SearchOption.TopDirectoryOnly).Any()) {
-          ZipFile.ExtractToDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.Combine("Robocode", "robocode.zip")), AppDomain.CurrentDomain.BaseDirectory);
-        }
+      base.OnLoad();
+      if (!Directory.EnumerateDirectories(AppDomain.CurrentDomain.BaseDirectory, Path.Combine("robocode", "libs"), SearchOption.TopDirectoryOnly).Any()) {
+        ZipFile.ExtractToDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.Combine("robocode", "robocode.zip")), AppDomain.CurrentDomain.BaseDirectory);
       }
+    }
   }
 }
