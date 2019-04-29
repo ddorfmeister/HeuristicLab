@@ -19,6 +19,7 @@
  */
 #endregion
 
+using System;
 using System.IO;
 using HeuristicLab.Common;
 using HeuristicLab.Core;
@@ -28,6 +29,8 @@ namespace HeuristicLab.Data {
   [Item("PathValue", "Represents a path.")]
   [StorableType("293B9A98-76C4-47E1-900D-67B8480BCBD6")]
   public abstract class PathValue : Item {
+
+    public EventHandler PathChanged;
 
     [Storable]
     private readonly StringValue stringValue = new StringValue();
@@ -41,6 +44,7 @@ namespace HeuristicLab.Data {
         if (value == null) value = string.Empty;
         value = value.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         stringValue.Value = value;
+        OnPathChanged();
       }
     }
 
@@ -54,6 +58,11 @@ namespace HeuristicLab.Data {
     protected PathValue()
       : base() {
       stringValue.ToStringChanged += (o, e) => OnToStringChanged();
+    }
+
+    protected virtual void OnPathChanged() {
+      EventHandler handler = PathChanged;
+      if (handler != null) handler(this, EventArgs.Empty);
     }
 
     [StorableHook(HookType.AfterDeserialization)]
