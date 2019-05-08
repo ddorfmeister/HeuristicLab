@@ -394,7 +394,7 @@ namespace HeuristicLab.Algorithms.Benchmarks {
       if (megaBytes <= 0) {
         throw new ArgumentException("MegaBytes must be greater than zero", "megaBytes");
       }
-      Random random = new Random();
+      System.Random random = new System.Random();
       byte[][] chunk = new byte[megaBytes][];
       for (int i = 0; i < chunk.Length; i++) {
         chunk[i] = new byte[1024 * 1024];

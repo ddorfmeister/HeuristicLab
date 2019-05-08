@@ -161,14 +161,14 @@ namespace HeuristicLab.Algorithms.Benchmarks {
     }
 
     private double mathGen(double[][] a, int lda, int n, double[] b) {
-      Random gen;
+      System.Random gen;
       double norma;
       int init, i, j;
 
       init = 1325;
       norma = 0.0;
 
-      gen = new Random(init);
+      gen = new System.Random(init);
 
       if (cancellationToken.IsCancellationRequested) {
         throw new OperationCanceledException(cancellationToken);
