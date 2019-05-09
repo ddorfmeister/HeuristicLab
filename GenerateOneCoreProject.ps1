@@ -1,8 +1,12 @@
-﻿$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+﻿param(
+  [switch]$excludeProblemInstances = $false,
+  [string]$outFile = 'HeuristicLab.OneCore.csproj',
+  [string]$encoding = 'utf8',
+  [string[]]$path = $pwd, # e.g. .,..\branches\my_branch,..\branches\another_branch
+  [string]$excludeDirs = '\.\\[^\\]*$|.*(bin\\|obj\\|HeuristicLab\\|HeuristicLab\.(Clients\..*|.*\.Views.*|CodeEditor|MainForm.*|ExtLibs|Optimizer|Services\..*|Tests)\\).*'
+)
 
-$outFile = 'HeuristicLab.OneCore.csproj'
-$excludeDirs = '.*(bin\\|obj\\|HeuristicLab\.(Clients\..*|.*\.Views.*|CodeEditor|MainForm.*|ExtLibs|Optimizer|Services\..*|Tests)\\).*'
-$activity = "Generating $($outFile)"
+$PSDefaultParameterValues['Out-File:Encoding'] = $encoding
 
 '<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -88,36 +92,45 @@ $activity = "Generating $($outFile)"
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>' | Out-File $outFile
+  <ItemGroup>
+    <Compile Include=".\HeuristicLab\3.3\Properties\AssemblyInfo.cs" />' | Out-File $outFile
 
-Get-ChildItem -Path $pwd -File -Recurse -Filter '*.cs' `
-  | ? { ($_.FullName -replace "\$([IO.Path]::DirectorySeparatorChar)", '\') -notmatch "$($excludeDirs)|.*\\(Plugin|AssemblyInfo)\.cs" } `
+$activity = "Generating $($outFile)"
+
+Get-ChildItem -Path $path -File -Recurse -Filter '*.cs' `
   | % { $_.FullName } `
   | Resolve-Path -Relative `
-  | % { Write-Progress -Activity $activity -Status 'Adding Compile entries' -CurrentOperation $_ } `
+  | ? { ($_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\') -notmatch "$($excludeDirs)|.*\\(Plugin|AssemblyInfo)\.cs" } `
+  | % { Write-Progress -Activity $activity -Status 'Adding Compile entries' -CurrentOperation $_; $_ } `
   | % { "    <Compile Include=""$($_)"" />" } `
   | Out-File $outFile -Append
 
 '  </ItemGroup>
   <ItemGroup>' | Out-File $outFile -Append
 
-Get-ChildItem -Path $pwd -File -Recurse `
-  | ? { $_.FullName -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
-  | ? { $_.Extension -in '.txt', '.dll', '.png', '.ico', '.svg' } `
+Get-ChildItem -Path $path -File -Recurse `
+  | ? { $_.Extension -in '.dll', '.ico', '.png', '.svg', '.txt' } `
   | % { $_.FullName } `
   | Resolve-Path -Relative `
-  | % { Write-Progress -Activity $activity -Status 'Adding Content entries' -CurrentOperation $_ } `
+  | ? { $_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
+  | % { Write-Progress -Activity $activity -Status 'Adding Content entries' -CurrentOperation $_; $_ } `
   | % { "    <Content Include=""$($_ -replace '&', '&amp;')"" />" } `
   | Out-File $outFile -Append
 
 '  </ItemGroup>
   <ItemGroup>' | Out-File $outFile -Append
 
-Get-ChildItem -Path $pwd -File -Recurse -Filter '*.resx' `
-  | ? { $_.FullName -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
+$embeddedResourcesExtensions = @('.resx')
+if (!$excludeProblemInstances) {
+  $embeddedResourcesExtensions += '.zip'
+}
+
+Get-ChildItem -Path $path -File -Recurse `
+  | ? { $_.Extension -in $embeddedResourcesExtensions } `
   | % { $_.FullName } `
   | Resolve-Path -Relative `
-  | % { Write-Progress -Activity $activity -Status 'Adding EmbeddedResource entries' -CurrentOperation $_ } `
+  | ? { $_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
+  | % { Write-Progress -Activity $activity -Status 'Adding EmbeddedResource entries' -CurrentOperation $_; $_ } `
   | % { "    <EmbeddedResource Include=""$($_)"" />" } `
   | Out-File $outFile -Append
 
