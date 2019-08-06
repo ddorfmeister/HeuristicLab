@@ -49,7 +49,7 @@ namespace HeuristicLab.ExactOptimization.LinearProgramming {
     private volatile ILinearProblemDefinition compiledProblemDefinition;
 
     public ProgrammableLinearProblemDefinition()
-      : base(ScriptTemplates.CompiledLinearProblemDefinition) {
+      : base(LPScriptTemplates.CompiledLinearProblemDefinition) {
       Name = "Programmable Linear Problem Definition";
       variableStore = new VariableStore();
     }

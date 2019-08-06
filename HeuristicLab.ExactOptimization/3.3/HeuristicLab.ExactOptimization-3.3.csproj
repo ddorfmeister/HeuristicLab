@@ -98,10 +98,10 @@
     <Compile Include="LinearProgramming\Algorithms\ProtoWriteFormat.cs" />
     <Compile Include="LinearProgramming\Algorithms\SolverResponseStatus.cs" />
     <Resource Include="LinearProgramming\Templates\CompiledLinearProblemDefinition.cs" />
-    <Compile Include="LinearProgramming\Templates\ScriptTemplates.Designer.cs">
+    <Compile Include="LinearProgramming\Templates\LPScriptTemplates.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ScriptTemplates.resx</DependentUpon>
+      <DependentUpon>LPScriptTemplates.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -124,10 +124,10 @@
     <None Include="HeuristicLab.snk" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LinearProgramming\Templates\ScriptTemplates.resx">
+    <EmbeddedResource Include="LinearProgramming\Templates\LPScriptTemplates.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
-      <LastGenOutput>ScriptTemplates.Designer.cs</LastGenOutput>
+      <LastGenOutput>LPScriptTemplates.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
