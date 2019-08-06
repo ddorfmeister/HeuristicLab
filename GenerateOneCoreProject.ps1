@@ -55,14 +55,29 @@ $PSDefaultParameterValues['Out-File:Encoding'] = $encoding
     <Reference Include="AutoDiff-1.0">
       <HintPath>bin\AutoDiff-1.0.dll</HintPath>
     </Reference>
+    <Reference Include="Calendar.DayView">
+      <HintPath>bin\Calendar.DayView.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetScilab-1.0">
       <HintPath>bin\DotNetScilab-1.0.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus-4.0.3">
       <HintPath>bin\EPPlus-4.0.3.dll</HintPath>
     </Reference>
+    <Reference Include="Google.OrTools">
+      <HintPath>bin\Google.OrTools.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>bin\Google.Protobuf.dll</HintPath>
+    </Reference>
     <Reference Include="Google.ProtocolBuffers-2.4.1.473">
       <HintPath>bin\Google.ProtocolBuffers-2.4.1.473.dll</HintPath>
+    </Reference>
+    <Reference Include="HEAL.Attic">
+      <HintPath>bin\HEAL.Attic.dll</HintPath>
+    </Reference>
+    <Reference Include="HeuristicLab.Problems.DataAnalysis.Symbolic.NativeInterpreter-0.1">
+      <HintPath>bin\HeuristicLab.Problems.DataAnalysis.Symbolic.NativeInterpreter-0.1.dll</HintPath>
     </Reference>
     <Reference Include="Interop.MLApp">
       <HintPath>bin\Interop.MLApp.dll</HintPath>
@@ -91,6 +106,7 @@ $PSDefaultParameterValues['Out-File:Encoding'] = $encoding
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include=".\HeuristicLab\3.3\Properties\AssemblyInfo.cs" />' | Out-File $outFile
@@ -98,23 +114,23 @@ $PSDefaultParameterValues['Out-File:Encoding'] = $encoding
 $activity = "Generating $($outFile)"
 
 Get-ChildItem -Path $path -File -Recurse -Filter '*.cs' `
-  | % { $_.FullName } `
+  | ForEach-Object { $_.FullName } `
   | Resolve-Path -Relative `
-  | ? { ($_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\') -notmatch "$($excludeDirs)|.*\\(Plugin|AssemblyInfo)\.cs" } `
-  | % { Write-Progress -Activity $activity -Status 'Adding Compile entries' -CurrentOperation $_; $_ } `
-  | % { "    <Compile Include=""$($_)"" />" } `
+  | Where-Object { ($_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\') -notmatch "$($excludeDirs)|.*\\(Plugin|AssemblyInfo)\.cs" } `
+  | ForEach-Object { Write-Progress -Activity $activity -Status 'Adding Compile entries' -CurrentOperation $_; $_ } `
+  | ForEach-Object { "    <Compile Include=""$($_)"" />" } `
   | Out-File $outFile -Append
 
 '  </ItemGroup>
   <ItemGroup>' | Out-File $outFile -Append
 
 Get-ChildItem -Path $path -File -Recurse `
-  | ? { $_.Extension -in '.dll', '.ico', '.png', '.svg', '.txt' } `
-  | % { $_.FullName } `
+  | Where-Object { $_.Extension -in '.dll', '.ico', '.png', '.svg', '.txt' } `
+  | ForEach-Object { $_.FullName } `
   | Resolve-Path -Relative `
-  | ? { $_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
-  | % { Write-Progress -Activity $activity -Status 'Adding Content entries' -CurrentOperation $_; $_ } `
-  | % { "    <Content Include=""$($_ -replace '&', '&amp;')"" />" } `
+  | Where-Object { $_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
+  | ForEach-Object { Write-Progress -Activity $activity -Status 'Adding Content entries' -CurrentOperation $_; $_ } `
+  | ForEach-Object { "    <Content Include=""$($_ -replace '&', '&amp;')"" />" } `
   | Out-File $outFile -Append
 
 '  </ItemGroup>
@@ -126,12 +142,12 @@ if (!$excludeProblemInstances) {
 }
 
 Get-ChildItem -Path $path -File -Recurse `
-  | ? { $_.Extension -in $embeddedResourcesExtensions } `
-  | % { $_.FullName } `
+  | Where-Object { $_.Extension -in $embeddedResourcesExtensions } `
+  | ForEach-Object { $_.FullName } `
   | Resolve-Path -Relative `
-  | ? { $_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
-  | % { Write-Progress -Activity $activity -Status 'Adding EmbeddedResource entries' -CurrentOperation $_; $_ } `
-  | % { "    <EmbeddedResource Include=""$($_)"" />" } `
+  | Where-Object { $_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
+  | ForEach-Object { Write-Progress -Activity $activity -Status 'Adding EmbeddedResource entries' -CurrentOperation $_; $_ } `
+  | ForEach-Object { "    <EmbeddedResource Include=""$($_)"" />" } `
   | Out-File $outFile -Append
 
 '  </ItemGroup>
