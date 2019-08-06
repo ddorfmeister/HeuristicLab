@@ -7,6 +7,12 @@ $locations = @(
   [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2017", "Community", "MSBuild", "15.0", "Bin")
   [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2017", "BuildTools", "MSBuild", "15.0", "Bin", "amd64"),
   [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2017", "BuildTools", "MSBuild", "15.0", "Bin")
+  [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2019", "Enterprise", "MSBuild", "Current", "Bin", "amd64")
+  [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2019", "Enterprise", "MSBuild", "Current", "Bin")
+  [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2019", "Community", "MSBuild", "Current", "Bin", "amd64")
+  [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2019", "Community", "MSBuild", "Current", "Bin")
+  [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2019", "BuildTools", "MSBuild", "Current", "Bin", "amd64"),
+  [System.IO.Path]::Combine($programFilesX86Dir, "Microsoft Visual Studio", "2019", "BuildTools", "MSBuild", "Current", "Bin")
 )
 
 $msBuildPath = $undefined
