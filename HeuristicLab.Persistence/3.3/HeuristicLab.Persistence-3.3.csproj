@@ -297,9 +297,7 @@ $SolutionDir/PreBuildEvent.sh
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Transformers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="HEAL.Attic, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ba48961d6f65dcec, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
