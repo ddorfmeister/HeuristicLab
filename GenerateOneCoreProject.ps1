@@ -1,19 +1,21 @@
 ﻿param(
-  [switch]$excludeProblemInstances = $false,
-  [string]$outFile = 'HeuristicLab.OneCore.csproj',
-  [string]$encoding = 'utf8',
+  [switch]$includeProblemInstances, # increases the size of the assembly significantly
+  [switch]$include64bit, # include plugins that only work on 64-bit systems,
   [string[]]$path = $pwd, # e.g. .,..\branches\my_branch,..\branches\another_branch
-  [string]$excludeDirs = '\.\\[^\\]*$|.*(bin\\|obj\\|HeuristicLab\\|HeuristicLab\.(Clients\..*|.*\.Views.*|CodeEditor|MainForm.*|ExtLibs|Optimizer|Services\..*|Tests)\\).*'
+  [string]$outFile = 'HeuristicLab.OneCore.csproj',
+  [string]$encoding = 'utf8'
 )
 
 $PSDefaultParameterValues['Out-File:Encoding'] = $encoding
+$activity = "Generating $($outFile)"
+$platform = If ($include64bit) { 'x64' } Else { 'AnyCPU' }
 
 '<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists(''$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props'')" />
   <PropertyGroup>
     <Configuration Condition=" ''$(Configuration)'' == '''' ">Debug</Configuration>
-    <Platform Condition=" ''$(Platform)'' == '''' ">AnyCPU</Platform>
+    <Platform Condition=" ''$(Platform)'' == '''' ">' + $platform + '</Platform>
     <ProjectGuid>{22E197BD-8951-4737-A85F-F1BFEC799516}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -22,25 +24,43 @@ $PSDefaultParameterValues['Out-File:Encoding'] = $encoding
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" ''$(Configuration)|$(Platform)'' == ''Debug|AnyCPU'' ">
+  <PropertyGroup Condition="''$(Configuration)|$(Platform)'' == ''Debug|AnyCPU'' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\OneCore\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>
-    </NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" ''$(Configuration)|$(Platform)'' == ''Release|AnyCPU'' ">
+  <PropertyGroup Condition="''$(Configuration)|$(Platform)'' == ''Release|AnyCPU'' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\OneCore\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="''$(Configuration)|$(Platform)'' == ''Debug|x64''">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\OneCore_x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="''$(Configuration)|$(Platform)'' == ''Release|x64''">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\OneCore_x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -63,14 +83,18 @@ $PSDefaultParameterValues['Out-File:Encoding'] = $encoding
     </Reference>
     <Reference Include="EPPlus-4.0.3">
       <HintPath>bin\EPPlus-4.0.3.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.OrTools">
+    </Reference>' | Out-File $outFile
+
+    if ($include64bit) { 
+'    <Reference Include="Google.OrTools">
       <HintPath>bin\Google.OrTools.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
       <HintPath>bin\Google.Protobuf.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.ProtocolBuffers-2.4.1.473">
+    </Reference>' | Out-File $outFile -Append
+    }
+
+'    <Reference Include="Google.ProtocolBuffers-2.4.1.473">
       <HintPath>bin\Google.ProtocolBuffers-2.4.1.473.dll</HintPath>
     </Reference>
     <Reference Include="HEAL.Attic">
@@ -109,9 +133,12 @@ $PSDefaultParameterValues['Out-File:Encoding'] = $encoding
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".\HeuristicLab\3.3\Properties\AssemblyInfo.cs" />' | Out-File $outFile
+    <Compile Include=".\HeuristicLab\3.3\Properties\AssemblyInfo.cs" />' | Out-File $outFile -Append
 
-$activity = "Generating $($outFile)"
+$excludeDirs = '\.\\[^\\]*$|.*(bin\\|obj\\|HeuristicLab\\|HeuristicLab\.(Clients\..*|.*\.Views.*|CodeEditor|MainForm.*|ExtLibs|Optimizer|Services\..*|Tests)\\).*'
+if (!$include64bit) {
+  $excludeDirs += '|.*(HeuristicLab\.(OrTools|ExactOptimization)\\).*'
+}
 
 Get-ChildItem -Path $path -File -Recurse -Filter '*.cs' `
   | ForEach-Object { $_.FullName } `
@@ -124,8 +151,10 @@ Get-ChildItem -Path $path -File -Recurse -Filter '*.cs' `
 '  </ItemGroup>
   <ItemGroup>' | Out-File $outFile -Append
 
+$contentExtensions = @('.dll', '.ico', '.png', '.svg', '.txt')
+
 Get-ChildItem -Path $path -File -Recurse `
-  | Where-Object { $_.Extension -in '.dll', '.ico', '.png', '.svg', '.txt' } `
+  | Where-Object { $_.Extension -in $contentExtensions } `
   | ForEach-Object { $_.FullName } `
   | Resolve-Path -Relative `
   | Where-Object { $_ -replace "\$([IO.Path]::DirectorySeparatorChar)", '\' -notmatch $excludeDirs } `
@@ -137,7 +166,7 @@ Get-ChildItem -Path $path -File -Recurse `
   <ItemGroup>' | Out-File $outFile -Append
 
 $embeddedResourcesExtensions = @('.resx')
-if (!$excludeProblemInstances) {
+if ($includeProblemInstances) {
   $embeddedResourcesExtensions += '.zip'
 }
 
